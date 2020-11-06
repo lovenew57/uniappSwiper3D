@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-			<swiper3D  :imgList="imgList" :imgUrl="imgUrl"></swiper3D>
+			<swiper3D  :imgList="imgList"></swiper3D>
 	</view>
 </template>
 
@@ -10,20 +10,11 @@
 		data() {
 			return {
 				imgList: [
-					{ src: '../../static/winbox.png' },
-					{ src: '../../static/winbox.png' },
-					{ src: '../../static/winbox.png' },
-					{ src: '../../static/winbox.png' },
-					{ src: '../../static/winbox.png' },
-					{ src: '../../static/winbox.png' },
-				],
-				imgUrl: [
-					{ url: 'other' },
-					{ url: 'other' },
-					{ url: 'other' },
-					{ url: 'other' },
-					{ url: 'other' },
-					{ url: 'other' }
+					{url: 'other?id=1' , src: '../../static/winbox.png' },
+					{url: '' , src: '../../static/winbox.png' },
+					{url: '' , src: '../../static/winbox.png' },
+					{url: '' , src: '../../static/winbox.png' },
+					{url: 'other?id=2' , src: '../../static/winbox.png' },
 				],
 			}
 		},

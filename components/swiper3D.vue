@@ -18,7 +18,6 @@
 export default {
 	props:{
 		imgList : { type : Array , default () { return  []}},
-		imgUrl :  { type : Array , default () { return  []}},
 		currentIndexParameter  : {type : Number, default : 1},//默认放在中间的图片
 		movewidthParameter  : {type : Number, default : 0.4},//图片位移
 		haveUrl : { type : Boolean, default : true },//是否进行页面的跳转
@@ -37,7 +36,6 @@ export default {
 		    success: function (res) {
 				that.movewidth =res.windowWidth * that.movewidthParameter; //设置图片位移
 				that.currentIndex=that.currentIndexParameter
-				if (that.haveUrl) that.setUrl(that.imgUrl); //设置是否有点击跳转
 				for (var i = 0; i < that.imgList.length; i++) {
 					//设置显示图层和隐藏多余图片
 					var animation = uni.createAnimation({
@@ -142,13 +140,6 @@ export default {
 				.opacity(0)
 				.step();
 			this.imgList[index].aData[0] = animation.export();
-		},
-		setUrl: function(imgUrl) {
-			if(imgUrl.length>0){
-				for (var i = 0; i < this.imgList.length; i++) {
-					this.imgList[i].url = imgUrl[i].url;
-				}
-			}
 		}
 	}
 };
