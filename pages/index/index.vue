@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-			<swiper3D  :imgList="imgList" :imgUrl="imgUrl"></swiper3D>
+			<swiper3D  :imgList="imgList" :currentIndexParameter="currentpic"></swiper3D>
 	</view>
 </template>
 
@@ -10,21 +10,13 @@
 		data() {
 			return {
 				imgList: [
-					{ src: '../../static/winbox.png' },
-					{ src: '../../static/winbox.png' },
-					{ src: '../../static/winbox.png' },
-					{ src: '../../static/winbox.png' },
-					{ src: '../../static/winbox.png' },
-					{ src: '../../static/winbox.png' },
+					{url: 'other?id=1' , src: '../../static/s0.png' },
+					{url: '' , src: '../../static/s1.png' },
+					{url: '' , src: '../../static/s2.png' },
+					{url: '' , src: '../../static/s3.png' },
+					{url: 'other?id=2' , src: '../../static/s4.png' },
 				],
-				imgUrl: [
-					{ url: 'other' },
-					{ url: 'other' },
-					{ url: 'other' },
-					{ url: 'other' },
-					{ url: 'other' },
-					{ url: 'other' }
-				],
+				currentpic:4
 			}
 		},
 		onLoad() {

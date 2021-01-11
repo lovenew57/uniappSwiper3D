@@ -18,7 +18,6 @@
 export default {
 	props:{
 		imgList : { type : Array , default () { return  []}},
-		imgUrl :  { type : Array , default () { return  []}},
 		currentIndexParameter  : {type : Number, default : 1},//默认放在中间的图片
 		movewidthParameter  : {type : Number, default : 0.4},//图片位移
 		haveUrl : { type : Boolean, default : true },//是否进行页面的跳转
@@ -37,7 +36,6 @@ export default {
 		    success: function (res) {
 				that.movewidth =res.windowWidth * that.movewidthParameter; //设置图片位移
 				that.currentIndex=that.currentIndexParameter
-				if (that.haveUrl) that.setUrl(that.imgUrl); //设置是否有点击跳转
 				for (var i = 0; i < that.imgList.length; i++) {
 					//设置显示图层和隐藏多余图片
 					var animation = uni.createAnimation({
@@ -47,13 +45,17 @@ export default {
 					that.imgList[i].aData = [{}, animation]; //item.aData[0] 动画控制代表元素 item.aData[1] 动画声明代表动画
 					that.imgList[i].ishide = true;
 					that.imgList[i].issecond = false;
-					if (i == 0) {
-						that.toleftA(0, that.imgList[0].aData[1]);
-					} else if (i == 2) {
-						that.torightA(2, that.imgList[2].aData[1]);
-						that.imgList[2].issecond = true;
-					} else if (i == 1) {
-						that.tomidA(1, that.imgList[1].aData[1]);
+					let midI=that.currentIndex
+					let leftI=that.currentIndex==0?(that.imgList.length-1):(that.currentIndex-1)
+					let rightI=that.currentIndex==(that.imgList.length-1)?0:(that.currentIndex+1)
+					
+					if (i == midI) {
+						that.tomidA(midI, that.imgList[midI].aData[1]);
+					} else if (i == leftI) {
+						that.toleftA(leftI, that.imgList[leftI].aData[1]);
+					} else if (i == rightI) {
+						that.torightA(rightI, that.imgList[rightI].aData[1]);
+						that.imgList[rightI].issecond = true;
 					} else {
 						that.tohide(i, that.imgList[i].aData[1]);
 					}
@@ -142,13 +144,6 @@ export default {
 				.opacity(0)
 				.step();
 			this.imgList[index].aData[0] = animation.export();
-		},
-		setUrl: function(imgUrl) {
-			if(imgUrl.length>0){
-				for (var i = 0; i < this.imgList.length; i++) {
-					this.imgList[i].url = imgUrl[i].url;
-				}
-			}
 		}
 	}
 };
