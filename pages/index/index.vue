@@ -20,7 +20,16 @@
 			}
 		},
 		onLoad() {
-
+			setTimeout(()=>{
+this.imgList=[
+		{url: 'other?id=1' , src: '../../static/s3.png' },
+		{url: '' , src: '../../static/s1.png' },
+		{url: '' , src: '../../static/s4.png' },
+		{url: '' , src: '../../static/s2.png' },
+		{url: 'other?id=2' , src: '../../static/s1.png' },
+	]
+	console.log(this.imgList)
+},2000)
 		},
 		methods: {
 

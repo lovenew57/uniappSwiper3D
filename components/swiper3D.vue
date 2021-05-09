@@ -30,6 +30,33 @@ export default {
 			currentIndex:1
 		};
 	},
+	watch: {
+	  imgList: {
+	    handler(newVal, oldVal) {
+			for (var i = 0; i < this.imgList.length; i++) {
+				//设置显示图层和隐藏多余图片
+				var animation = uni.createAnimation({
+					duration: 1000,
+					timingFunction: 'ease'
+				});
+				this.imgList[i].aData = [{}, animation]; //item.aData[0] 动画控制代表元素 item.aData[1] 动画声明代表动画
+				this.imgList[i].ishide = true;
+				this.imgList[i].issecond = false;
+				if (i == 0) {
+					this.toleftA(0, this.imgList[0].aData[1]);
+				} else if (i == 2) {
+					this.torightA(2, this.imgList[2].aData[1]);
+					this.imgList[2].issecond = true;
+				} else if (i == 1) {
+					this.tomidA(1, this.imgList[1].aData[1]);
+				} else {
+					this.tohide(i, this.imgList[i].aData[1]);
+				}
+			}
+	    },
+		deep: true, //true 深度监听
+	  },
+	},
 	created: function() {
 		var that=this
 		uni.getSystemInfo({
