@@ -1,6 +1,12 @@
 <template>
 	<view class="content">
-			<swiper3D  :imgList="imgList" :currentIndexParameter="currentpic"></swiper3D>
+			<swiper3D 
+			 :imgList="imgList" 
+			:currentIndexParameter="currentpic"
+			:delayTime="2"
+			:turn="false"
+			>
+			</swiper3D>
 	</view>
 </template>
 

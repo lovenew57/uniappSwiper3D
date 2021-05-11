@@ -22,17 +22,52 @@ export default {
 		movewidthParameter  : {type : Number, default : 0.4},//图片位移
 		haveUrl : { type : Boolean, default : true },//是否进行页面的跳转
 		openTypeParameter  :{type : String, default : "navigate"},
+		delayTime: {type : Number, default : 0},//默认延迟时间 当延迟时间是0的时候不自动滚动 单位秒  也就是数值时1 的时候就是1秒后进行旋转
+		turn: {type : Boolean, default : true},//当默认延时大于0时图片的位移方向 true 是从左往右 false 是从右往左
 	},
 	data() {
 		return {
-			startData: { clientX: '' }, //确定左滑右滑
+			startData: { clientX: 0 }, //确定左滑右滑
 			movewidth:0,
-			currentIndex:1
+			currentIndex:1,
+			intervalId:null
 		};
 	},
 	watch: {
 	  imgList: {
 	    handler(newVal, oldVal) {
+			this.init()
+	    },
+		deep: true, //true 深度监听
+	  },
+	},
+	created: function() {
+		uni.getSystemInfo({
+		    success: res=> {
+				this.movewidth =res.windowWidth * this.movewidthParameter; //设置图片位移
+				this.currentIndex=this.currentIndexParameter
+				this.init()
+		    }
+		});
+	},
+	methods: {
+		init(){
+			this.initData()
+			this.initDelay()
+		},
+		initDelay(){
+			if(this.delayTime<=0)return
+			if(this.intervalId!=null){
+				clearInterval(this.intervalId)
+				this.intervalId=null
+			}
+			this.intervalId=setInterval(()=>{
+				let nextClientX=this.startData.clientX+(this.turn?30:-30)
+					this.end({changedTouches:[{clientX:nextClientX}]})
+					this.startData.clientX=nextClientX
+			},this.delayTime*1000);
+		},
+		initData(){
 			for (var i = 0; i < this.imgList.length; i++) {
 				//设置显示图层和隐藏多余图片
 				var animation = uni.createAnimation({
@@ -42,57 +77,22 @@ export default {
 				this.imgList[i].aData = [{}, animation]; //item.aData[0] 动画控制代表元素 item.aData[1] 动画声明代表动画
 				this.imgList[i].ishide = true;
 				this.imgList[i].issecond = false;
-				if (i == 0) {
-					this.toleftA(0, this.imgList[0].aData[1]);
-				} else if (i == 2) {
-					this.torightA(2, this.imgList[2].aData[1]);
-					this.imgList[2].issecond = true;
-				} else if (i == 1) {
-					this.tomidA(1, this.imgList[1].aData[1]);
-				} else {
-					this.tohide(i, this.imgList[i].aData[1]);
-				}
+				this.tohide(i, this.imgList[i].aData[1]);
 			}
-	    },
-		deep: true, //true 深度监听
-	  },
-	},
-	created: function() {
-		var that=this
-		uni.getSystemInfo({
-		    success: function (res) {
-				that.movewidth =res.windowWidth * that.movewidthParameter; //设置图片位移
-				that.currentIndex=that.currentIndexParameter
-				for (var i = 0; i < that.imgList.length; i++) {
-					//设置显示图层和隐藏多余图片
-					var animation = uni.createAnimation({
-						duration: 1000,
-						timingFunction: 'ease'
-					});
-					that.imgList[i].aData = [{}, animation]; //item.aData[0] 动画控制代表元素 item.aData[1] 动画声明代表动画
-					that.imgList[i].ishide = true;
-					that.imgList[i].issecond = false;
-					let midI=that.currentIndex
-					let leftI=that.currentIndex==0?(that.imgList.length-1):(that.currentIndex-1)
-					let rightI=that.currentIndex==(that.imgList.length-1)?0:(that.currentIndex+1)
-					
-					if (i == midI) {
-						that.tomidA(midI, that.imgList[midI].aData[1]);
-					} else if (i == leftI) {
-						that.toleftA(leftI, that.imgList[leftI].aData[1]);
-					} else if (i == rightI) {
-						that.torightA(rightI, that.imgList[rightI].aData[1]);
-						that.imgList[rightI].issecond = true;
-					} else {
-						that.tohide(i, that.imgList[i].aData[1]);
-					}
-				}
-		    }
-		});
-		
-
-	},
-	methods: {
+			this.tomidA(this.currentIndex, this.imgList[this.currentIndex].aData[1]);
+			if(this.currentIndex>0){
+				this.toleftA(this.currentIndex-1, this.imgList[this.currentIndex-1].aData[1]);
+			}else{
+				this.toleftA(this.imgList.length-1, this.imgList[this.imgList.length-1].aData[1]);
+			}
+			if(this.currentIndex==this.imgList.length-1){
+				this.torightA(0, this.imgList[0].aData[1]);
+				this.imgList[0].issecond = true;
+			}else{
+				this.torightA(this.currentIndex+1, this.imgList[this.currentIndex+1].aData[1]);
+				this.imgList[this.currentIndex+1].issecond = true;
+			}
+		},
 		toPage(item){
 			if(this.haveUrl&&item.url&&this.openTypeParameter=='navigate'){
 				uni.navigateTo({
@@ -105,12 +105,17 @@ export default {
 			}
 		},
 		start(e) {
+			if(this.intervalId!=null){
+				clearInterval(this.intervalId)
+				this.intervalId=null
+			}
 			this.startData.clientX = e.changedTouches[0].clientX;
 		},
 		end(e) {
 			//thisIndex 移动前当前选中 leftIndex 移动前左边 rightIndex 移动前右边  showindex 移动前需要去左边显示的index
 			var thisIndex = this.currentIndex;
 			const subX = e.changedTouches[0].clientX - this.startData.clientX;
+			
 			let leftIndex = thisIndex == 0 ? this.imgList.length - 1 : thisIndex - 1;
 			let rightIndex = thisIndex == this.imgList.length - 1 ? 0 : thisIndex + 1;
 			if (subX > 20) {
@@ -137,6 +142,9 @@ export default {
 				this.toleftA(thisIndex, this.imgList[thisIndex].aData[1]);
 				this.tomidA(rightIndex, this.imgList[rightIndex].aData[1]);
 				this.torightA(showindex, this.imgList[leftIndex].aData[1]);
+			}
+			if(this.delayTime>0&&!this.intervalId){
+				this.initDelay()
 			}
 		},
 		tomidA: function(index, animation) {
